@@ -1,0 +1,18 @@
+syntax = "proto3";
+package example;
+
+service SomethingUnary {
+  rpc GetSomething(SomethingRequest) returns (SomethingResponse) {}
+}
+
+service SomethingStream {
+  rpc GetSomething(SomethingRequest) returns (stream SomethingResponse) {}
+}
+
+message SomethingRequest {
+  string name = 1;
+}
+
+message SomethingResponse {
+  string message = 1;
+}

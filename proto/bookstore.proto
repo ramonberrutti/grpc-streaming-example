@@ -1,0 +1,25 @@
+syntax = "proto3";
+package example;
+
+service BookStore {
+  rpc ListBooks(ListBooksRequest) returns (stream Book) {}
+}
+
+message ListBooksRequest {
+  string author = 1;
+}
+
+message Book {
+  string title = 1;
+  string author = 2;
+  int32 publication_year = 3;
+  string genre = 4;
+}
+
+service BookStoreBatch {
+  rpc ListBooks(ListBooksRequest) returns (stream ListBooksResponse) {}
+}
+
+message ListBooksResponse {
+  repeated Book books = 1;
+}
