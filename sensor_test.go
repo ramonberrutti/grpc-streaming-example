@@ -21,12 +21,11 @@ type sensorService struct {
 }
 
 type serverStream struct {
-	s        *sensorService
-	stream   pb.Sensor_WatchServer
-	sendCh   chan *pb.WatchResponse
-	sensorCh chan sensorData
-
-	sensorWatch map[string]int
+	s           *sensorService         // Service
+	stream      pb.Sensor_WatchServer  // Stream
+	sendCh      chan *pb.WatchResponse // Control channel
+	sensorCh    chan sensorData        // Data channel
+	sensorWatch map[string]int         // Map of sensor id to watch id
 }
 
 func (ss *serverStream) close() {
@@ -165,6 +164,9 @@ func (ss *serverStream) sendLoop() {
 			}); err != nil {
 				return
 			}
+
+		case <-ss.stream.Context().Done():
+			return
 		}
 	}
 }
@@ -222,6 +224,10 @@ func TestSensor(t *testing.T) {
 
 	waitForSensorData(t, response, "temp")
 	waitForSensorData(t, response, "pres")
+
+	// invalid sensor
+	createRequest(t, stream, "invalid")
+	waitUntilCanceled(t, response, "invalid")
 
 	nowRequest(t, stream, "light")
 	waitForSensorData(t, response, "light")
