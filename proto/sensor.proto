@@ -1,0 +1,38 @@
+syntax = "proto3";
+package example;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
+
+service Sensor {
+  rpc Watch(stream WatchRequest) returns (stream WatchResponse) {}
+}
+
+message WatchRequest {
+  oneof request {
+    WatchCreateRequest create_request = 1;
+    WatchCancelRequest cancel_request = 2;
+    WatchNowRequest now_request = 3;
+  }
+}
+
+message WatchCreateRequest {
+  string sensor_id = 1;
+}
+
+message WatchCancelRequest {
+  string sensor_id = 1;
+}
+
+message WatchNowRequest {
+  string sensor_id = 1;
+}
+
+message WatchResponse {
+  string sensor_id = 1;
+  bool created = 2;
+  bool canceleted = 3;
+  string error = 4;
+  google.protobuf.Timestamp timestamp = 5;
+  int32 value = 6;
+}
